@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authorizing...</title>
+    <script>
+        function handleRedirect() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            const state = params.get('state');
+
+            // The 'state' parameter contains the user's unique RunPod URL.
+            // We redirect the user back to their pod, forwarding the 'code'.
+            if (code && state) {
+                // Ensure the state is a valid URL for security
+                try {
+                    const targetUrl = new URL(state);
+                    // Only redirect to runpod.net subdomains
+                    if (targetUrl.hostname.endsWith('.proxy.runpod.net')) {
+                        targetUrl.searchParams.append('code', code);
+                        window.location.replace(targetUrl.href);
+                    } else {
+                        document.body.innerText = "Error: Invalid redirect target.";
+                    }
+                } catch (e) {
+                    document.body.innerText = "Error: Malformed redirect state.";
+                }
+            } else {
+                document.body.innerText = "Error: Missing authorization code or state from Patreon.";
+            }
+        }
+    </script>
+</head>
+<body onload="handleRedirect()" style="font-family:sans-serif;text-align:center;padding-top:60px">
+    <h1>🚀 Please wait, redirecting you back to your workspace...</h1>
+</body>
+</html>
